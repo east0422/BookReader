@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef enum : NSUInteger {
+    FormatTypeNone, // 默认不做处理
+    FormatTypeOne, // 去掉回车，将两个及以上换行替换为两个换行，去掉单个换行链接符
+} FormatType;
+
 @interface FileUtil : NSObject
 
 /** document目录路径 */
@@ -26,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 将一个路径文件拷贝到指定目录中
 + (BOOL)copyFilePath:(NSString *)originPath toDest:(NSString *)destPath;
 /** 解析指定路径文件，返回文件内容 */
-+ (NSString *)parseContentWithPath:(NSString *)path;
++ (NSString *)parseContentWithPath:(NSString *)path withFormatType:(FormatType)formatType;
 /** 查找str在content中的range，可能有多个值或使用正则表达式有多个range，NSRange是结构体需要转换为NSValue */
 + (NSMutableArray *)getRangeArrInContent:(NSString *)content withFindStr:(NSString *)str;
 

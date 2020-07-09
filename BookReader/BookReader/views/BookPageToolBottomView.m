@@ -118,7 +118,7 @@ typedef enum : NSUInteger {
             break;
         case TagForFontBtn:
             if ([self.delegate respondsToSelector:@selector(changeFontToSize:)]) {
-                [self.delegate changeFontToSize:20];
+                [self.delegate changeFontToSize:25];
             }
             break;
         default:

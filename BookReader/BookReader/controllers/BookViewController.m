@@ -13,6 +13,7 @@
 #import "BookChapterListView.h"
 #import "FileUtil.h"
 #import "UserDefaultUtil.h"
+#import "CoreTextUtil.h"
 #import <Masonry.h>
 
 #define TOOLHEIGHT 70
@@ -47,7 +48,7 @@
 @property (nonatomic, assign) NSInteger curContentIndex;
 // 字体大小
 @property (nonatomic, assign) NSInteger fontSize;
-// 章节每一页显示区域大小
+// 章节每一页显示区域大小(BookPageViewController的contentView显示区域大小)
 @property (nonatomic, assign) CGSize contentSize;
 
 @end
@@ -220,22 +221,18 @@
 }
 
 - (void)readModeClicked:(UIButton *)btn {
-    if (self.pageVC.viewControllers.count != 1) {
-        return;
-    }
-    BookPageViewController *bookpageVC = self.pageVC.viewControllers.firstObject;
     if (btn.selected) {
         [UserDefaultUtil saveReadModeNight];
     } else {
         [UserDefaultUtil saveReadModeDefault];
     }
-    [bookpageVC updateUI];
+    [self.curChapterContentVC updateUI];
 }
 
 - (void)changeFontToSize:(NSInteger)fontSize {
     // 显示字体调节视图
     self.fontSize = fontSize;
-    self.textAttributedDict = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]};
+    self.textAttributedDict = @{NSFontAttributeName: [UIFont fontWithName:@"PingFang SC" size:fontSize]};
     self.chapterContentList = [self parseChapterContentListWithText:self.chapterTextList[self.curChapterIndex]];
     self.curChapterContentVC.content = self.chapterContentList[self.curContentIndex];
     [self.curChapterContentVC setCurPage:self.curContentIndex totalPages:self.chapterContentList.count];
@@ -252,9 +249,12 @@
 
 - (NSMutableArray *)parseChapterContentListWithText:(NSString *)text {
     NSMutableArray *pageArr = [NSMutableArray array];
-    NSMutableAttributedString *originAttriStr = [[NSMutableAttributedString alloc] initWithString:text attributes:self.textAttributedDict];
+    NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:text attributes:self.textAttributedDict];
     
-    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:originAttriStr];
+    // 填充textview需要考虑textContainer.lineFragmentPadding值
+//    return [CoreTextUtil getPageContentsWithAttrStr:attrStr withContentSize:self.contentSize];
+    
+    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attrStr];
     NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
     [textStorage addLayoutManager:layoutManager];
     
@@ -265,9 +265,8 @@
         if (range.length <= 0) {
             break;
         }
-        NSString *str = [text substringWithRange:range];
-        NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:str attributes:self.textAttributedDict];
-        [pageArr addObject:attrStr];
+
+        [pageArr addObject:[[NSMutableAttributedString alloc] initWithAttributedString:[attrStr attributedSubstringFromRange:range]]];
     }
     return pageArr;
 }
@@ -303,7 +302,11 @@
 //        }
     }
     
-    content = [FileUtil parseContentWithPath:bookPath];
+    if ([book.name isEqualToString:@"三国演义"]) {
+        content = [FileUtil parseContentWithPath:bookPath withFormatType:FormatTypeOne];
+    } else {
+        content = [FileUtil parseContentWithPath:bookPath withFormatType:FormatTypeNone];
+    }
     if (content) {
         [FileUtil parseContent:content toChapterTitle:self.chapterTitleList andChapterContent:self.chapterTextList];
         self.chapterListView.chapterList = self.chapterTitleList;

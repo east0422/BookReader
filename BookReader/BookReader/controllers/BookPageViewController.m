@@ -101,6 +101,11 @@
         _contentView.selectable = NO;
         // 一定要设置为0，不然计算出的文字不能全部显示出来
         _contentView.textContainerInset = UIEdgeInsetsZero;
+        // scrollerView作为controller的view的第一个subview时，系统会自动加20像素的安全距离 adjustedContentInset: {20, 0, 0, 0}
+//        _contentView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        
+        // 使用CoreTextUtil类方法getPageContentsWithAttrStr::需要将该属性设为0或计算宽度减去改值的两倍，否则文字不能显示完全
+//        _contentView.textContainer.lineFragmentPadding = 0;
     }
     return _contentView;
 }
