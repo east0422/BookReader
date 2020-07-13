@@ -204,6 +204,10 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)speechInBookPageToolTopView:(BookPageToolTopView *)topView {
+    
+}
+
 #pragma --- BookPageToolBottomViewDelegate
 - (void)chapterListClicked:(UIButton *)btn {
     // 显示章节目录列表
@@ -230,10 +234,20 @@
     [self.curChapterContentVC updateUI];
 }
 
-- (void)changeFontToSize:(NSInteger)fontSize {
+- (void)changeFontWithType:(BookPageChangeFontType)fontType {
     // 显示字体调节视图
-    self.fontSize = fontSize;
-    self.textAttributedDict = @{NSFontAttributeName: [UIFont fontWithName:@"PingFang SC" size:fontSize]};
+    if (fontType == BookPageChangeFontDecrease) { // 字体减小2
+        if (self.fontSize <= 16) { // 最小字体大小为16
+            return;
+        }
+        self.fontSize -= 2;
+    } else if (fontType == BookPageChangeFontIncrease) { // 字体增加2
+        if (self.fontSize >= 30) { // 最大字体大小为30
+            return;
+        }
+        self.fontSize += 2;
+    }
+    self.textAttributedDict = @{NSFontAttributeName: [UIFont fontWithName:@"PingFang SC" size:self.fontSize]};
     self.chapterContentList = [self parseChapterContentListWithText:self.chapterTextList[self.curChapterIndex]];
     self.curChapterContentVC.content = self.chapterContentList[self.curContentIndex];
     [self.curChapterContentVC setCurPage:self.curContentIndex totalPages:self.chapterContentList.count];

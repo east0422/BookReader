@@ -21,7 +21,7 @@ typedef enum : NSUInteger {
 // 点击章节列表按钮
 - (void)chapterListClicked:(UIButton *)btn;
 // 字体按钮
-- (void)changeFontToSize:(NSInteger)fontSize;
+- (void)changeFontWithType:(BookPageChangeFontType)fontType;
 
 @end
 

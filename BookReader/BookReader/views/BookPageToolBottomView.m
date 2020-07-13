@@ -13,7 +13,8 @@
 typedef enum : NSUInteger {
     TagForListBtn,
     TagForReadModeBtn,
-    TagForFontBtn,
+    TagForDecreaseFontBtn,
+    TagForIncreaseFontBtn,
 } TagForBtn;
 
 @interface BookPageToolBottomView ()
@@ -22,8 +23,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) UIButton *listBtn;
 // 阅读模式按钮
 @property (nonatomic, strong) UIButton *readModeBtn;
-// 字体更改按钮
-@property (nonatomic, strong) UIButton *fontBtn;
+// 字体减小按钮
+@property (nonatomic, strong) UIButton *decreaseFontBtn;
+// 字体增大按钮
+@property (nonatomic, strong) UIButton *increaseFontBtn;
 
 @end
 
@@ -57,22 +60,35 @@ typedef enum : NSUInteger {
     return _readModeBtn;
 }
 
-- (UIButton *)fontBtn {
-    if (_fontBtn == nil) {
-        _fontBtn = [[UIButton alloc] init];
-        _fontBtn.tag = TagForFontBtn;
-        [_fontBtn setTitle:@"A" forState:(UIControlStateNormal)];
-        [_fontBtn setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-        [_fontBtn addTarget:self action:@selector(btnClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+- (UIButton *)decreaseFontBtn {
+    if (_decreaseFontBtn == nil) {
+        _decreaseFontBtn = [[UIButton alloc] init];
+        _decreaseFontBtn.tag = TagForDecreaseFontBtn;
+        [_decreaseFontBtn setTitle:@"A-" forState:(UIControlStateNormal)];
+        [_decreaseFontBtn setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        [_decreaseFontBtn addTarget:self action:@selector(btnClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     }
     
-    return _fontBtn;
+    return _decreaseFontBtn;
+}
+
+- (UIButton *)increaseFontBtn {
+    if (_increaseFontBtn == nil) {
+        _increaseFontBtn = [[UIButton alloc] init];
+        _increaseFontBtn.tag = TagForIncreaseFontBtn;
+        [_increaseFontBtn setTitle:@"A+" forState:(UIControlStateNormal)];
+        [_increaseFontBtn setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        [_increaseFontBtn addTarget:self action:@selector(btnClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    }
+    
+    return _increaseFontBtn;
 }
 
 - (void)initUI {
     [self addSubview:self.listBtn];
     [self addSubview:self.readModeBtn];
-    [self addSubview:self.fontBtn];
+    [self addSubview:self.decreaseFontBtn];
+    [self addSubview:self.increaseFontBtn];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -88,19 +104,15 @@ typedef enum : NSUInteger {
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    [self.listBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.top.mas_offset(15);
-        make.width.height.mas_equalTo(25);
-    }];
-    [self.readModeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(25);
-        make.center.mas_equalTo(self);
-    }];
-    [self.fontBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(-10);
+    // 子视图高度25，垂直居中
+    [self.subviews mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(25);
         make.centerY.mas_equalTo(self);
-        make.width.height.mas_equalTo(25);
     }];
+    // 水平排列，子视图宽度25，首尾间距均为10
+    [self.subviews mas_distributeViewsAlongAxis:(MASAxisTypeHorizontal) withFixedItemLength:25 leadSpacing:10 tailSpacing:10];
+    // 水平排列，子视图等间距30，首尾间距10
+//    [self.subviews mas_distributeViewsAlongAxis:(MASAxisTypeHorizontal) withFixedSpacing:30 leadSpacing:10 tailSpacing:10];
 }
 
 - (void)btnClicked: (UIButton *)btn {
@@ -116,9 +128,14 @@ typedef enum : NSUInteger {
                 [self.delegate readModeClicked:btn];
             }
             break;
-        case TagForFontBtn:
-            if ([self.delegate respondsToSelector:@selector(changeFontToSize:)]) {
-                [self.delegate changeFontToSize:25];
+        case TagForDecreaseFontBtn:
+            if ([self.delegate respondsToSelector:@selector(changeFontWithType:)]) {
+                [self.delegate changeFontWithType:BookPageChangeFontDecrease];
+            }
+            break;
+        case TagForIncreaseFontBtn:
+            if ([self.delegate respondsToSelector:@selector(changeFontWithType:)]) {
+                [self.delegate changeFontWithType:BookPageChangeFontIncrease];
             }
             break;
         default:

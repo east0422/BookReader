@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 点击返回按钮响应事件
 - (void)backInBookPageToolTopView:(BookPageToolTopView *)topView;
+// 点击语音按钮响应事件，对文本进行读
+- (void)speechInBookPageToolTopView:(BookPageToolTopView *)topView;
 
 @end
 
