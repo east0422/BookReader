@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSArray *chapterList;
 @property (nonatomic, weak) id<BookChapterListViewDelegate> delegate;
 
+// 更新当前章节选中NSIndexPath的row值
+- (void)updateIndexPathRow:(NSInteger)row;
+
 @end
 
 NS_ASSUME_NONNULL_END

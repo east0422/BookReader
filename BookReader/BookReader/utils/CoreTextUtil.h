@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 // attrStr每一页显示区域大小为contenSize，获取其分页内容数组
 + (NSArray<NSMutableAttributedString *> *)getPageContentsWithAttrStr:(NSAttributedString *)attrStr withContentSize:(CGSize)contentSize;
 
+// 获取点击位置位于CTFrameRef中索引
++ (CFIndex)getCFIndexWithTouchPoint:(CGPoint)touchPoint inCTFrameRef:(CTFrameRef)frameRef;
+// 获取attrStr，宽度为maxW时实际所占高度
++ (CGFloat)getAttrHeight:(NSAttributedString *)attrStr withMaxWidth:(CGFloat)maxW;
+
 @end
 
 NS_ASSUME_NONNULL_END

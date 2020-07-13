@@ -208,6 +208,7 @@
 - (void)chapterListClicked:(UIButton *)btn {
     // 显示章节目录列表
     self.chapterListView.hidden = NO;
+    [self.chapterListView updateIndexPathRow:self.curChapterIndex];
     // 隐藏顶部底部工具视图
     self.showToolView = NO;
     [UIView animateWithDuration:0.3 animations:^{
