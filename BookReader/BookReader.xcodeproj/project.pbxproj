@@ -19,6 +19,7 @@
 		45439F8024B4446B008F5348 /* 三国演义.txt in Resources */ = {isa = PBXBuildFile; fileRef = 45439F7F24B4446B008F5348 /* 三国演义.txt */; };
 		45439F8224B444BB008F5348 /* 仙剑奇侠传.txt in Resources */ = {isa = PBXBuildFile; fileRef = 45439F8124B444BB008F5348 /* 仙剑奇侠传.txt */; };
 		45439F8E24B6DB4B008F5348 /* CoreTextUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 45439F8D24B6DB4B008F5348 /* CoreTextUtil.m */; };
+		45439F9324BCBA0C008F5348 /* SpeechUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 45439F9224BCBA0C008F5348 /* SpeechUtil.m */; };
 		4574B41824ACA8ED00D1E0D9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4574B41724ACA8ED00D1E0D9 /* AppDelegate.m */; };
 		4574B41B24ACA8ED00D1E0D9 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4574B41A24ACA8ED00D1E0D9 /* SceneDelegate.m */; };
 		4574B41E24ACA8ED00D1E0D9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4574B41D24ACA8ED00D1E0D9 /* ViewController.m */; };
@@ -52,6 +53,8 @@
 		45439F8124B444BB008F5348 /* 仙剑奇侠传.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "仙剑奇侠传.txt"; sourceTree = "<group>"; };
 		45439F8C24B6DB4B008F5348 /* CoreTextUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreTextUtil.h; sourceTree = "<group>"; };
 		45439F8D24B6DB4B008F5348 /* CoreTextUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreTextUtil.m; sourceTree = "<group>"; };
+		45439F9124BCBA0C008F5348 /* SpeechUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpeechUtil.h; sourceTree = "<group>"; };
+		45439F9224BCBA0C008F5348 /* SpeechUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpeechUtil.m; sourceTree = "<group>"; };
 		4574B41324ACA8ED00D1E0D9 /* BookReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4574B41624ACA8ED00D1E0D9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		4574B41724ACA8ED00D1E0D9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -89,6 +92,8 @@
 				45439F7D24B3C494008F5348 /* UserDefaultUtil.m */,
 				45439F8C24B6DB4B008F5348 /* CoreTextUtil.h */,
 				45439F8D24B6DB4B008F5348 /* CoreTextUtil.m */,
+				45439F9124BCBA0C008F5348 /* SpeechUtil.h */,
+				45439F9224BCBA0C008F5348 /* SpeechUtil.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -316,6 +321,7 @@
 				45439F8E24B6DB4B008F5348 /* CoreTextUtil.m in Sources */,
 				4574B41B24ACA8ED00D1E0D9 /* SceneDelegate.m in Sources */,
 				45041E4F24B07D8D0031C532 /* BookPageToolBottomView.m in Sources */,
+				45439F9324BCBA0C008F5348 /* SpeechUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

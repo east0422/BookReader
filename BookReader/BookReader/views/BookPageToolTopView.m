@@ -64,6 +64,7 @@ typedef enum : NSUInteger {
     
     [self.backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(10);
+        // 按钮太小不太容易触发点击事件，可考虑将按钮宽高增大以便于触发点击事件
         make.width.height.mas_equalTo(30);
         make.centerY.mas_equalTo(self);
     }];
@@ -85,7 +86,7 @@ typedef enum : NSUInteger {
             btn.selected = !btn.selected;
             btn.tintColor = btn.selected ? [UIColor redColor]: [UIColor whiteColor];
             if ([self.delegate respondsToSelector:@selector(speechInBookPageToolTopView:)]) {
-                [self.delegate speechInBookPageToolTopView:self];
+                [self.delegate speechInBookPageToolTopView:btn.selected];
             }
             break;
         default:

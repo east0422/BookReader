@@ -14,12 +14,13 @@
 #import "FileUtil.h"
 #import "UserDefaultUtil.h"
 #import "CoreTextUtil.h"
+#import "SpeechUtil.h"
 #import <Masonry.h>
 
 #define TOOLHEIGHT 70
 #define ScreenSize UIScreen.mainScreen.bounds.size
 
-@interface BookViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, BookPageToolTopViewDelegate, BookPageToolBottomViewDelegate, BookChapterListViewDelegate, UIGestureRecognizerDelegate>
+@interface BookViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, BookPageToolTopViewDelegate, BookPageToolBottomViewDelegate, BookChapterListViewDelegate, UIGestureRecognizerDelegate, AVSpeechSynthesizerDelegate>
 
 // 分页视图控制器
 @property (nonatomic, strong) UIPageViewController *pageVC;
@@ -50,6 +51,9 @@
 @property (nonatomic, assign) NSInteger fontSize;
 // 章节每一页显示区域大小(BookPageViewController的contentView显示区域大小)
 @property (nonatomic, assign) CGSize contentSize;
+
+// 语言合成工具实例对象
+@property (nonatomic, strong) SpeechUtil *speechUtil;
 
 @end
 
@@ -171,6 +175,12 @@
         self.curContentIndex--;
     }
     
+    // 返回数据前关闭交互，确保只允许翻一页。避免上一个动画还没有结束下一个动画就开始了
+    pageViewController.view.userInteractionEnabled = NO;
+    
+    // 若需要的话更新语音读内容
+    [self updateSpeech];
+    
     return [self viewControllerAtIndex:self.curContentIndex];
 }
 
@@ -187,7 +197,21 @@
         self.curContentIndex++;
     }
     
+    // 返回数据前关闭交互，确保只允许翻一页。避免上一个动画还没有结束下一个动画就开始了
+    pageViewController.view.userInteractionEnabled = NO;
+    
+    // 若需要的话更新语音读内容
+    [self updateSpeech];
+    
     return [self viewControllerAtIndex:self.curContentIndex];
+}
+
+#pragma --- UIPageViewControllerDelegate
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed {
+    if (finished && completed) {
+        // 无论有无翻页，只要动画结束就恢复交互。
+        pageViewController.view.userInteractionEnabled = YES;
+    }
 }
 
 #pragma --- UIGestureRecognizerDelegate
@@ -199,13 +223,40 @@
     return YES;
 }
 
+#pragma --- AVSpeechSynthesizerDelegate
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance *)utterance {
+    if (self.curContentIndex == self.chapterContentList.count - 1) { // 最后一页
+        if (self.curChapterIndex == self.chapterTextList.count - 1) { // 最后一章最后一页停止继续读
+            [self.speechUtil stopSpeech];
+            return;
+        } else if (self.curChapterIndex < self.chapterTextList.count - 1) { // 非最后一章的最后一页
+            self.curChapterIndex++;
+            self.curContentIndex = 0;
+            self.chapterContentList = [self parseChapterContentListWithText:self.chapterTextList[self.curChapterIndex]];
+        }
+    } else {
+        self.curContentIndex++;
+    }
+    
+    // 翻页内容
+    self.curChapterContentVC.content = self.chapterContentList[self.curContentIndex];
+    [self.curChapterContentVC setCurPage:self.curContentIndex totalPages:self.chapterContentList.count];
+    
+    // 继续读翻页内容
+    [self.speechUtil startSpeechWithContent:self.chapterContentList[self.curContentIndex].string];
+}
+
 #pragma --- BookPageToolTopViewDelegate
 - (void)backInBookPageToolTopView:(BookPageToolTopView *)topView {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)speechInBookPageToolTopView:(BookPageToolTopView *)topView {
-    
+- (void)speechInBookPageToolTopView:(BOOL)isSpeech {
+    if (isSpeech) { // 开始读
+        [self.speechUtil startSpeechWithContent:self.chapterContentList[self.curContentIndex].string];
+    } else { // 停止读
+        [self.speechUtil stopSpeech];
+    }
 }
 
 #pragma --- BookPageToolBottomViewDelegate
@@ -260,8 +311,12 @@
     self.chapterContentList = [self parseChapterContentListWithText:self.chapterTextList[self.curChapterIndex]];
     self.curChapterContentVC.content = self.chapterContentList[self.curContentIndex];
     [self.curChapterContentVC setCurPage:self.curContentIndex totalPages:self.chapterContentList.count];
+    
+    // 若需要的话更新语音读内容
+    [self updateSpeech];
 }
 
+#pragma --- 自定义方法
 - (NSMutableArray *)parseChapterContentListWithText:(NSString *)text {
     NSMutableArray *pageArr = [NSMutableArray array];
     NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:text attributes:self.textAttributedDict];
@@ -302,6 +357,15 @@
     return bookPageVC;
 }
 
+// 手动翻页或切换目录时若是语音模式则更新语音内容
+- (void)updateSpeech {
+    if (self.speechUtil.isSpeaking) {
+        [self.speechUtil stopSpeech];
+        [self.speechUtil startSpeechWithContent:self.chapterContentList[self.curContentIndex].string];
+    }
+}
+
+#pragma --- setter方法
 - (void)setBook:(Book *)book {
     _book = book;
     NSString *content = nil;
@@ -335,7 +399,7 @@
     self.pageVC.view.userInteractionEnabled = !showToolView;
 }
 
-// 懒加载
+#pragma --- 懒加载
 - (UIPageViewController *)pageVC {
     if (_pageVC == nil) {
         _pageVC = [[UIPageViewController alloc] initWithTransitionStyle:(UIPageViewControllerTransitionStylePageCurl) navigationOrientation:(UIPageViewControllerNavigationOrientationHorizontal) options:nil];
@@ -370,6 +434,14 @@
         _chapterListView.delegate = self;
     }
     return _chapterListView;
+}
+
+- (SpeechUtil *)speechUtil {
+    if (_speechUtil == nil) {
+        _speechUtil = [[SpeechUtil alloc] init];
+        _speechUtil.delegate = self;
+    }
+    return _speechUtil;
 }
 
 @end
